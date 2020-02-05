@@ -57,12 +57,23 @@ func (session *Session) Run() error {
 	}()
 
 	{
-		lintArgs := make([]string, len(session.ports)+2)
-		lintArgs[0] = "-p"
-		lintArgs[1] = "lint"
-		copy(lintArgs[2:], session.ports)
-		lintCmd := exec.Command("port", lintArgs...)
-		out, err := lintCmd.CombinedOutput()
+        subports, err := ListSubports(session.ports)
+        if subports != "" {
+		    lintArgs := make([]string, len(session.ports)+2)
+		    lintArgs[0] = "-p"
+		    lintArgs[1] = "lint"
+		    copy(lintArgs[2:], session.ports)
+		    lintCmd := exec.Command("port", lintArgs...)
+		    out, err := lintCmd.CombinedOutput()
+        } else {
+		    lintArgs := make([]string, len(session.ports)+2)
+		    lintArgs[0] = "-p"
+		    lintArgs[1] = "lint"
+		    copy(lintArgs[2:], session.ports)
+		    lintCmd := exec.Command("port", lintArgs...)
+		    out, err := lintCmd.CombinedOutput()
+        }
+
 		statusString := "success"
 		if err != nil {
 			statusString = "fail"
